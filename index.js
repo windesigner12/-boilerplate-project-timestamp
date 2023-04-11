@@ -24,27 +24,56 @@ app.get("/api/hello", function(req, res) {
   res.json({ greeting: 'hello API' });
 });
 
-app.get("/api/:date?", function(req, res) {
-  var reqString = req.params.date;
-  var resDate;
-  // check to see if the string is a unix timestamp
-  if (!/^\d{4}-/.test(reqString)) reqString = parseInt(reqString);
-  resDate = new Date(reqString);
-  // this comparision is used to see if the date is a valid date, is there another way to do this?
-  if (resDate.getTime() !== resDate.getTime()) {
-    res.json({ error: "Invalid Date" });
+// app.get("/api/:date?", function(req, res) {
+//   var reqString = req.params.date;
+//   var resDate;
+//   // check to see if the string is a unix timestamp
+//   if (!/^\d{4}-/.test(reqString)) reqString = parseInt(reqString);
+//   resDate = new Date(reqString);
+//   // this comparision is used to see if the date is a valid date, is there another way to do this?
+//   if (resDate.getTime() !== resDate.getTime()) {
+//     res.json({ error: "Invalid Date" });
+//   }
+//   res.json({ unix: resDate.valueOf(), utc: resDate.toUTCString() });
+
+// });
+
+app.get("/api/timestamp/:date?", (req, res)=>{
+  
+  //Date parameter is in url
+  if (req.params.date){
+    //If date is all number, pass it as number to Date(), else pass it as string
+    if (/^\d+$/.test(req.params.date)){
+      date = new Date(+req.params.date)
+    } else {
+      date = new Date(req.params.date)
+    }
+
+    //Response depends on if the date parameter is a valid date
+    if (date == "Invalid Date"){
+      res.json({
+        "error": "Invalid Date"
+      })
+    } else {
+      res.json({
+        "unix": date.getTime(),
+        "utc": date.toUTCString(),
+      })
+    }
+  //Date parameter in url is empty
+  } else {
+    res.json({
+      "unix": new Date(),
+      "utc": new Date().toUTCString()
+    })
   }
-  res.json({ unix: resDate.valueOf(), utc: resDate.toUTCString() });
-
-});
-
-
+})
 
 app.get("/api/2015-12-25", function(req, res) {
 
-  var resDateAutre = new Date();
+  var resDateAutre = new Date("2015-12-25");
 
-  res.json({ unix: resDateAutre.valueOf(), utc: resDateAutre.toUTCString() });
+  res.json({ unix: resDateAutre.getTime, utc: resDateAutre.toUTCString() });
 });
 
 
